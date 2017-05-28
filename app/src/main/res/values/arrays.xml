@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="countries_array">
+        <item>Estonia</item>
+        <item>Latvia</item>
+        <item>Lithuania</item>
+        <item>Russia</item>
+        <item>Finland</item>
+    </string-array>
+</resources>

@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Pocotest</string>
+
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="error_passwords_are_not_same">Check your passwords</string>
+    <string name="sign_up">Sign up</string>
+    <string name="log_in">Log in</string>
+    <string name="got_it">Got it!</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="next_step">Next step</string>
+    <string name="i_accept_the_terms_of_service">I accept the Terms of service</string>
+    <string name="error_accept_terms">You have to accept the Terms of service</string>
+    <string name="city">City</string>
+    <string name="postal_code">Postal code</string>
+    <string name="thank_you">Thank you!</string>
+    <string name="description1">I am very glad you want to create an account.</string>
+    <string name="description2">First of all you need to insert your email, password and accept the Terms of service.</string>
+    <string name="description3">On the second page you need to choose your country, enter your city and postal code.</string>
+    <string name="description4">Pay attention that all the fields are required.</string>
+</resources>
