@@ -173,7 +173,8 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
             try {
                 actualData.put("email", email);
                 actualData.put("password", password);
-                actualData.put("country", country);
+                actualData.put("country", formatCountry(country));
+                Log.d("strana", formatCountry(country));
                 actualData.put("city", city);
                 actualData.put("postal_code", postalCode);
             } catch (JSONException e) {
@@ -203,6 +204,15 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
             return null;
         }
 
+    }
+
+    private String formatCountry(String country) {
+        if (country.equals("Estonia")) {country = "ET";}
+        else if (country.equals("Latvia")) {country = "LV";}
+        else if (country.equals("Lithuania")) {country = "LT";}
+        else if (country.equals("Finland")) {country = "FI";}
+        else if (country.equals("Russia")) {country = "RU";}
+        return country;
     }
 
     private void handleResult(JSONObject jsonObject) {
