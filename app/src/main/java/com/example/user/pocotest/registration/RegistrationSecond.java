@@ -17,7 +17,7 @@ import com.example.user.pocotest.R;
 
 public class RegistrationSecond extends AppCompatActivity {
     private AutoCompleteTextView mEmailView;
-    private EditText mPasswordView,mConfirmPasswordView;
+    private EditText mPasswordView, mConfirmPasswordView;
     private CheckBox terms;
 
 
@@ -27,21 +27,23 @@ public class RegistrationSecond extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration_second);
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        if(toolbar!=null){
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
             setSupportActionBar(toolbar);
-            getSupportActionBar().setTitle("2/3   Sign up");
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle("2/3   Sign up");
+            }
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        mEmailView = (AutoCompleteTextView)findViewById(R.id.signUpEmail);
-        mPasswordView = (EditText)findViewById(R.id.signUpPassword);
-        mConfirmPasswordView = (EditText)findViewById(R.id.signUpConfirmPassword);
-        terms = (CheckBox)findViewById(R.id.terms);
+        mEmailView = (AutoCompleteTextView) findViewById(R.id.signUpEmail);
+        mPasswordView = (EditText) findViewById(R.id.signUpPassword);
+        mConfirmPasswordView = (EditText) findViewById(R.id.signUpConfirmPassword);
+        terms = (CheckBox) findViewById(R.id.terms);
         checkErrors();
 
-        Button continueButton = (Button)findViewById(R.id.signUpSecondContinue);
+        Button continueButton = (Button) findViewById(R.id.signUpSecondContinue);
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -52,11 +54,13 @@ public class RegistrationSecond extends AppCompatActivity {
 
     private void checkErrors() {
         Intent intent = getIntent();
-        if(intent.hasExtra("error")) {
-            Toast.makeText(this, intent.getStringExtra("error"), Toast.LENGTH_SHORT).show();
-            if(intent.hasExtra("email")) {
+        if (intent.hasExtra("error")) {
+            String error = intent.getStringExtra("error");
+            Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+            if (intent.hasExtra("email")) {
+                String email = intent.getStringExtra("email");
                 View focusView;
-                mEmailView.setText(intent.getStringExtra("email"));
+                mEmailView.setText(email);
                 focusView = mPasswordView;
                 focusView.requestFocus();
             }
@@ -67,15 +71,16 @@ public class RegistrationSecond extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (item.getItemId() == android.R.id.home) {
-            startActivity(new Intent(this,RegistrationFirst.class));
+            startActivity(new Intent(this, RegistrationFirst.class));
             finish();
         }
 
         return super.onOptionsItemSelected(item);
     }
+
     @Override
-    public void onBackPressed(){
-        startActivity(new Intent(this,RegistrationFirst.class));
+    public void onBackPressed() {
+        startActivity(new Intent(this, RegistrationFirst.class));
 
     }
 
@@ -85,10 +90,9 @@ public class RegistrationSecond extends AppCompatActivity {
         mConfirmPasswordView.setError(null);
         terms.setError(null);
 
-
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
-        String confirmedPassword =  mConfirmPasswordView.getText().toString();
+        String confirmedPassword = mConfirmPasswordView.getText().toString();
         boolean cancel = false;
         View focusView = null;
         if (TextUtils.isEmpty(email)) {
@@ -105,33 +109,35 @@ public class RegistrationSecond extends AppCompatActivity {
             if (TextUtils.isEmpty(email)) {
                 focusView = mEmailView;
                 cancel = true;
-            }else {
+            } else {
                 focusView = mPasswordView;
                 cancel = true;
             }
-        }else if(!arePasswordsCorrect(password,confirmedPassword)){
+        } else if (!arePasswordsCorrect(password, confirmedPassword)) {
             mPasswordView.setError(getString(R.string.error_passwords_are_not_same));
             mPasswordView.setText("");
             mConfirmPasswordView.setText("");
             focusView = mPasswordView;
             cancel = true;
         }
-        if(TextUtils.isEmpty(confirmedPassword)){
+        if (TextUtils.isEmpty(confirmedPassword)) {
             mConfirmPasswordView.setError(getString(R.string.error_field_required));
             if (TextUtils.isEmpty(email)) {
                 focusView = mEmailView;
                 cancel = true;
-            }else if (TextUtils.isEmpty(password)) {
+            } else if (TextUtils.isEmpty(password)) {
                 focusView = mPasswordView;
                 cancel = true;
-            }else {
+            } else {
                 focusView = mConfirmPasswordView;
                 cancel = true;
             }
-        }if(!terms.isChecked()){
+        }
+        if (!terms.isChecked()) {
             focusView = mEmailView;
-            Toast.makeText(this,getString(R.string.error_accept_terms),Toast.LENGTH_SHORT).show();
-            cancel=true;
+            Toast.makeText(this, getString(R.string.error_accept_terms), Toast.LENGTH_SHORT)
+                    .show();
+            cancel = true;
         }
         if (cancel) {
             focusView.requestFocus();
@@ -144,7 +150,7 @@ public class RegistrationSecond extends AppCompatActivity {
     }
 
     private boolean arePasswordsCorrect(String password, String confirmedPassword) {
-       return password.equals(confirmedPassword);
+        return password.equals(confirmedPassword);
     }
 
     private boolean isEmailValid(String email) {

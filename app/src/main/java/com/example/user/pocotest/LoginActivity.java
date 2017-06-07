@@ -25,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -41,16 +42,17 @@ public class LoginActivity extends AppCompatActivity {
     private View mProgressView;
     private View mLoginFormView;
     private final String LOG = "OKHTTP3";
-    private final String url = "https://poco-test.herokuapp.com/login";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        if(toolbar!=null){
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
             setSupportActionBar(toolbar);
-            getSupportActionBar().setTitle("Login Activity");
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle("Login Activity");
+            }
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
@@ -70,6 +72,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -109,7 +112,7 @@ public class LoginActivity extends AppCompatActivity {
             if (TextUtils.isEmpty(email)) {
                 focusView = mEmailView;
                 cancel = true;
-            }else {
+            } else {
                 focusView = mPasswordView;
                 cancel = true;
             }
@@ -117,47 +120,44 @@ public class LoginActivity extends AppCompatActivity {
         if (cancel) {
             focusView.requestFocus();
         } else {
-           new FeedTask().execute();
-           }
+            new FinishLogin().execute();
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            hideSoftKeyboard();
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        hideSoftKeyboard();
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
+        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
 
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mProgressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
     public void hideSoftKeyboard() {
-        if(getCurrentFocus()!=null) {
-            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        if (getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager =
+                    (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus()
+                    .getWindowToken(), 0);
         }
     }
 
-    public class FeedTask extends AsyncTask<String, Void, String> {
+    private class FinishLogin extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
@@ -168,7 +168,11 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
             Log.d(LOG, "Post called");
-            OkHttpClient client = new OkHttpClient();
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .writeTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(10, TimeUnit.SECONDS)
+                    .build();
             MediaType JSON = MediaType.parse("application/json;charset=utf-8");
             JSONObject actualData = new JSONObject();
             try {
@@ -178,6 +182,7 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d(LOG, "JSONException");
                 e.printStackTrace();
             }
+            String url = "https://poco-test.herokuapp.com/login";
             RequestBody postData = RequestBody.create(JSON, actualData.toString());
             Log.d(LOG, "RequestBody created");
             Request request = new Request.Builder()
@@ -187,10 +192,9 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 Response response = client.newCall(request).execute();
                 Log.d(LOG, "Request done, got the response");
-
                 String result = response.body().string();
                 JSONObject jsonObject = new JSONObject(result);
-                handleResult(jsonObject);
+                formatResult(jsonObject);
                 Log.d(LOG, result);
                 return result;
             } catch (IOException e) {
@@ -205,28 +209,29 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void handleResult(JSONObject jsonObject) {
+    private void formatResult(JSONObject jsonObject) {
         try {
-            if (jsonObject.has("data")){
+            if (jsonObject.has("data")) {
                 Intent intent = new Intent(LoginActivity.this, CongratulationActivity.class);
-                intent.putExtra("message","Congratulations on the successful login!");
-                Log.d(LOG,"success");
+                intent.putExtra("message", "Congratulations on the successful login!");
+                Log.d(LOG, "success");
                 startActivity(intent);
-            }else if(jsonObject.has("error")){
-                if(jsonObject.get("error").toString().equals("err.wrong.credentials")){
+            } else if (jsonObject.has("error")) {
+                if (jsonObject.get("error").toString().equals("err.wrong.credentials")) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             Intent intent = getIntent();
                             finish();
                             startActivity(intent);
-                            Toast.makeText(LoginActivity.this,"wrong credentials!",Toast.LENGTH_LONG).show();
+                            Toast.makeText(LoginActivity.this, "wrong credentials!", Toast.LENGTH_LONG)
+                                    .show();
                         }
                     });
                 }
             }
         } catch (JSONException e) {
-            Log.d(LOG, "Handle result JSONException");
+            Log.d(LOG, "Format result JSONException");
             e.printStackTrace();
         }
     }

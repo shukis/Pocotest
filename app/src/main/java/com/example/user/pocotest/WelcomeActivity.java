@@ -11,13 +11,12 @@ import com.example.user.pocotest.registration.RegistrationFirst;
 public class WelcomeActivity extends AppCompatActivity {
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-        Button logIn = (Button)findViewById(R.id.welcomeLogIn);
-        Button signUp = (Button)findViewById(R.id.welcomeSignUp);
+        Button logIn = (Button) findViewById(R.id.welcomeLogIn);
+        Button signUp = (Button) findViewById(R.id.welcomeSignUp);
         logIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -40,11 +39,12 @@ public class WelcomeActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
+
     private void showActivity(String action) {
-        if(action.equals("login")){
-            startActivity(new Intent(this,LoginActivity.class));
-        }else if(action.equals("registration")){
-            startActivity(new Intent(this,RegistrationFirst.class));
+        if (action.equals("login")) {
+            startActivity(new Intent(this, LoginActivity.class));
+        } else if (action.equals("registration")) {
+            startActivity(new Intent(this, RegistrationFirst.class));
         }
     }
 }

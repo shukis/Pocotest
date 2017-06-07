@@ -33,6 +33,7 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class RegistrationThird extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private EditText mCityView, mPostalCodeView;
@@ -41,7 +42,6 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
     private View mLoginFormView;
     private int CALLS_TO_SERVER = 0;
     private final String LOG = "OKHTTP3";
-    private final String url = "https://poco-test.herokuapp.com/addUser";
 
 
     @Override
@@ -51,19 +51,22 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
         password = intent.getStringExtra("Password");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration_third);
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        if(toolbar!=null){
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
             setSupportActionBar(toolbar);
-            getSupportActionBar().setTitle("3/3   Sign up               "+getEmailFirstFiveLettes());
+            if (getSupportActionBar() != null) {
+                String title = "3/3   Sign up               " + getEmailFirstFiveLettes();
+                getSupportActionBar().setTitle(title);
+            }
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
         setUpSpinner();
-        mCityView = (EditText)findViewById(R.id.signUpCity);
-        mPostalCodeView = (EditText)findViewById(R.id.signUpPostalCode);
+        mCityView = (EditText) findViewById(R.id.signUpCity);
+        mPostalCodeView = (EditText) findViewById(R.id.signUpPostalCode);
         mProgressView = findViewById(R.id.login_progress);
         mLoginFormView = findViewById(R.id.login_form);
-        Button continueButton = (Button)findViewById(R.id.signUpThirdContinue);
+        Button continueButton = (Button) findViewById(R.id.signUpThirdContinue);
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,6 +75,7 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
         });
 
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -87,14 +91,12 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
         mCityView.setError(null);
         mPostalCodeView.setError(null);
 
-        // Store values at the time of the activity_login attempt.
         city = mCityView.getText().toString();
         postalCode = mPostalCodeView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid email address.
         if (TextUtils.isEmpty(city)) {
             mCityView.setError(getString(R.string.error_field_required));
             focusView = mCityView;
@@ -105,7 +107,7 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
             if (TextUtils.isEmpty(city)) {
                 focusView = mCityView;
                 cancel = true;
-            }else {
+            } else {
                 focusView = mPostalCodeView;
                 cancel = true;
             }
@@ -113,47 +115,44 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
         if (cancel) {
             focusView.requestFocus();
         } else {
-            new FeedTask().execute();
+            new FinishRegistration().execute();
 
         }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            hideSoftKeyboard();
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
+        hideSoftKeyboard();
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
 
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mProgressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
     public void hideSoftKeyboard() {
-        if(getCurrentFocus()!=null) {
-            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        if (getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager)
+                    getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus()
+                    .getWindowToken(), 0);
         }
     }
 
-    public class FeedTask extends AsyncTask<String, Void, String> {
+    private class FinishRegistration extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
             runOnUiThread(new Runnable() {
@@ -174,13 +173,13 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
                 actualData.put("email", email);
                 actualData.put("password", password);
                 actualData.put("country", formatCountry(country));
-                Log.d("strana", formatCountry(country));
                 actualData.put("city", city);
                 actualData.put("postal_code", postalCode);
             } catch (JSONException e) {
                 Log.d(LOG, "RequestBody JSONException");
                 e.printStackTrace();
             }
+            String url = "https://poco-test.herokuapp.com/addUser";
             RequestBody postData = RequestBody.create(JSON, actualData.toString());
             Log.d(LOG, "RequestBody created");
             Request request = new Request.Builder()
@@ -188,11 +187,11 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
                     .post(postData)
                     .build();
             try {
-                okhttp3.Response response = client.newCall(request).execute();
+                Response response = client.newCall(request).execute();
                 Log.d(LOG, "Request done, got the response");
                 String result = response.body().string();
                 JSONObject jsonObject = new JSONObject(result);
-                handleResult(jsonObject);
+                formatResult(jsonObject);
                 return result;
             } catch (IOException e) {
                 Log.d(LOG, "Response IOException");
@@ -207,15 +206,27 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
     }
 
     private String formatCountry(String country) {
-        if (country.equals("Estonia")) {country = "ET";}
-        else if (country.equals("Latvia")) {country = "LV";}
-        else if (country.equals("Lithuania")) {country = "LT";}
-        else if (country.equals("Finland")) {country = "FI";}
-        else if (country.equals("Russia")) {country = "RU";}
+        switch (country) {
+            case "Estonia":
+                country = "ET";
+                break;
+            case "Latvia":
+                country = "LV";
+                break;
+            case "Lithuania":
+                country = "LT";
+                break;
+            case "Finland":
+                country = "FI";
+                break;
+            case "Russia":
+                country = "RU";
+                break;
+        }
         return country;
     }
 
-    private void handleResult(JSONObject jsonObject) {
+    private void formatResult(JSONObject jsonObject) {
         try {
             Intent intent;
             if (jsonObject.has("error")) {
@@ -234,19 +245,19 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
                     intent.putExtra("error", "user already exists!");
                     startActivity(intent);
                 } else if (jsonObject.get("error").toString().equals("err.timeout")) {
-                    if(CALLS_TO_SERVER<5){
+                    if (CALLS_TO_SERVER < 5) {
                         CALLS_TO_SERVER++;
-                        new FeedTask().execute();
-                    }else {
-                        intent = new Intent(RegistrationThird.this,RegistrationSecond.class);
-                        intent.putExtra("error","connection problem!");
+                        new FinishRegistration().execute();
+                    } else {
+                        intent = new Intent(RegistrationThird.this, RegistrationSecond.class);
+                        intent.putExtra("error", "connection problem!");
                         startActivity(intent);
                     }
                 }
             } else if (jsonObject.has("data")) {
                 if (jsonObject.get("data").toString().equals("success")) {
                     intent = new Intent(RegistrationThird.this, CongratulationActivity.class);
-                    intent.putExtra("message","Congratulations on the successful registration!");
+                    intent.putExtra("message", "Congratulations on the successful registration!");
                     Log.d(LOG, "success");
                     startActivity(intent);
                 }
@@ -269,10 +280,10 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
     }
 
     private String getEmailFirstFiveLettes() {
-        if(email.length()<5){
+        if (email.length() < 5) {
             return email;
-        }else {
-            return String.valueOf(email.subSequence(0,5));
+        } else {
+            return String.valueOf(email.subSequence(0, 5));
         }
     }
 
