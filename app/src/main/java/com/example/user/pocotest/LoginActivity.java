@@ -86,17 +86,14 @@ public class LoginActivity extends AppCompatActivity {
 
     private void attemptLogin() {
 
-
         mEmailView.setError(null);
         mPasswordView.setError(null);
-
 
         email = mEmailView.getText().toString();
         password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
-
 
         if (TextUtils.isEmpty(email)) {
             mEmailView.setError(getString(R.string.error_field_required));
@@ -168,45 +165,57 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
             Log.d(LOG, "Post called");
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .connectTimeout(10, TimeUnit.SECONDS)
-                    .writeTimeout(10, TimeUnit.SECONDS)
-                    .readTimeout(10, TimeUnit.SECONDS)
-                    .build();
-            MediaType JSON = MediaType.parse("application/json;charset=utf-8");
-            JSONObject actualData = new JSONObject();
-            try {
-                actualData.put("email", email);
-                actualData.put("password", password);
-            } catch (JSONException e) {
-                Log.d(LOG, "JSONException");
-                e.printStackTrace();
-            }
-            String url = "https://poco-test.herokuapp.com/login";
-            RequestBody postData = RequestBody.create(JSON, actualData.toString());
-            Log.d(LOG, "RequestBody created");
-            Request request = new Request.Builder()
-                    .url(url)
-                    .post(postData)
-                    .build();
-            try {
-                Response response = client.newCall(request).execute();
-                Log.d(LOG, "Request done, got the response");
-                String result = response.body().string();
-                JSONObject jsonObject = new JSONObject(result);
-                formatResult(jsonObject);
-                Log.d(LOG, result);
-                return result;
-            } catch (IOException e) {
-                Log.d(LOG, "Response IOException");
-                e.printStackTrace();
-            } catch (JSONException e) {
-                Log.d(LOG, "Response JSONException");
-                e.printStackTrace();
-            }
-            return null;
+            JSONObject actualData = createJsonObject();
+            Request request = createRequest(actualData);
+            return getResponse(request);
         }
 
+    }
+
+    private JSONObject createJsonObject() {
+        JSONObject actualData = new JSONObject();
+        try {
+            actualData.put("email", email);
+            actualData.put("password", password);
+        } catch (JSONException e) {
+            Log.d(LOG, "JSONException");
+            e.printStackTrace();
+        }
+        return actualData;
+    }
+
+    private Request createRequest(JSONObject actualData) {
+        MediaType JSON = MediaType.parse("application/json;charset=utf-8");
+        String url = "https://poco-test.herokuapp.com/login";
+        RequestBody postData = RequestBody.create(JSON, actualData.toString());
+        Log.d(LOG, "RequestBody created");
+        return new Request.Builder()
+                .url(url)
+                .post(postData)
+                .build();
+    }
+
+    private String getResponse(Request request) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            Log.d(LOG, "Request done, got the response");
+            String result = response.body().string();
+            JSONObject jsonObject = new JSONObject(result);
+            formatResult(jsonObject);
+            return result;
+        } catch (IOException e) {
+            Log.d(LOG, "Response IOException");
+            e.printStackTrace();
+        } catch (JSONException e) {
+            Log.d(LOG, "Response JSONException");
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private void formatResult(JSONObject jsonObject) {
@@ -217,18 +226,7 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d(LOG, "success");
                 startActivity(intent);
             } else if (jsonObject.has("error")) {
-                if (jsonObject.get("error").toString().equals("err.wrong.credentials")) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = getIntent();
-                            finish();
-                            startActivity(intent);
-                            Toast.makeText(LoginActivity.this, "wrong credentials!", Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    });
-                }
+                handleErrorResponse(jsonObject.get("error").toString());
             }
         } catch (JSONException e) {
             Log.d(LOG, "Format result JSONException");
@@ -236,6 +234,21 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void handleErrorResponse(String error) {
+        switch (error) {
+            case "err.wrong.credentials":
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = getIntent();
+                        finish();
+                        startActivity(intent);
+                        Toast.makeText(LoginActivity.this, "wrong credentials!", Toast.LENGTH_LONG)
+                                .show();
+                    }
+                });
+        }
+    }
 
     private boolean isEmailValid(String email) {
         return email.contains("@");
