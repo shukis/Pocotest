@@ -206,7 +206,7 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(LOG, "Request done, got the response");
             String result = response.body().string();
             JSONObject jsonObject = new JSONObject(result);
-            formatResult(jsonObject);
+            parseResponse(jsonObject);
             return result;
         } catch (IOException e) {
             Log.d(LOG, "Response IOException");
@@ -218,7 +218,7 @@ public class LoginActivity extends AppCompatActivity {
         return null;
     }
 
-    private void formatResult(JSONObject jsonObject) {
+    private void parseResponse(JSONObject jsonObject) {
         try {
             if (jsonObject.has("data")) {
                 Intent intent = new Intent(LoginActivity.this, CongratulationActivity.class);
