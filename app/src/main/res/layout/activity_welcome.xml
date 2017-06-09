@@ -9,7 +9,7 @@
     tools:layout_editor_absoluteX="8dp"
     android:background="@color/colorPrimaryDark"
     tools:layout_editor_absoluteY="8dp"
-    tools:context="com.example.user.pocotest.WelcomeActivity">
+    tools:context="com.example.user.pocotest.activities.WelcomeActivity">
 
     <TextView
         android:textColor="@color/mainColor"

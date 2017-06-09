@@ -1,4 +1,4 @@
-package com.example.user.pocotest;
+package com.example.user.pocotest.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -21,17 +21,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.user.pocotest.Json;
+import com.example.user.pocotest.R;
+import com.example.user.pocotest.User;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -164,59 +161,24 @@ public class LoginActivity extends AppCompatActivity {
                     showProgress(true);
                 }
             });
+            String url = "https://poco-test.herokuapp.com/login";
             Log.d(LOG, "Post called");
-            JSONObject actualData = createJsonObject();
-            Request request = createRequest(actualData);
-            return getResponse(request);
+            Json json = new Json();
+            User user = new User(email, password, null, null, null);
+            try {
+                JSONObject actualData = json.createJsonObject("LoginActivity", user);
+                Request request = json.createRequest(actualData, url);
+                String result = json.getResponse(request);
+                parseResponse(new JSONObject(result));
+                return result;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
 
     }
 
-    private JSONObject createJsonObject() {
-        JSONObject actualData = new JSONObject();
-        try {
-            actualData.put("email", email);
-            actualData.put("password", password);
-        } catch (JSONException e) {
-            Log.d(LOG, "JSONException");
-            e.printStackTrace();
-        }
-        return actualData;
-    }
-
-    private Request createRequest(JSONObject actualData) {
-        MediaType JSON = MediaType.parse("application/json;charset=utf-8");
-        String url = "https://poco-test.herokuapp.com/login";
-        RequestBody postData = RequestBody.create(JSON, actualData.toString());
-        Log.d(LOG, "RequestBody created");
-        return new Request.Builder()
-                .url(url)
-                .post(postData)
-                .build();
-    }
-
-    private String getResponse(Request request) {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
-                .build();
-        try {
-            Response response = client.newCall(request).execute();
-            Log.d(LOG, "Request done, got the response");
-            String result = response.body().string();
-            JSONObject jsonObject = new JSONObject(result);
-            parseResponse(jsonObject);
-            return result;
-        } catch (IOException e) {
-            Log.d(LOG, "Response IOException");
-            e.printStackTrace();
-        } catch (JSONException e) {
-            Log.d(LOG, "Response JSONException");
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     private void parseResponse(JSONObject jsonObject) {
         try {
@@ -250,7 +212,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isEmailValid(String email) {
+    public boolean isEmailValid(String email) {
         return email.contains("@");
     }
 

@@ -1,4 +1,4 @@
-package com.example.user.pocotest.registration;
+package com.example.user.pocotest.activities.registration;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -14,8 +14,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.user.pocotest.R;
+import com.example.user.pocotest.activities.LoginActivity;
 
-public class RegistrationSecond extends AppCompatActivity {
+public class RegistrationSecondActivity extends AppCompatActivity {
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView, mConfirmPasswordView;
     private CheckBox terms;
@@ -71,7 +72,7 @@ public class RegistrationSecond extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (item.getItemId() == android.R.id.home) {
-            startActivity(new Intent(this, RegistrationFirst.class));
+            startActivity(new Intent(this, RegistrationFirstActivity.class));
             finish();
         }
 
@@ -80,7 +81,7 @@ public class RegistrationSecond extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(this, RegistrationFirst.class));
+        startActivity(new Intent(this, RegistrationFirstActivity.class));
 
     }
 
@@ -99,7 +100,7 @@ public class RegistrationSecond extends AppCompatActivity {
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
+        } else if (!new LoginActivity().isEmailValid(email)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
@@ -142,7 +143,7 @@ public class RegistrationSecond extends AppCompatActivity {
         if (cancel) {
             focusView.requestFocus();
         } else {
-            Intent intent = new Intent(this, RegistrationThird.class);
+            Intent intent = new Intent(this, RegistrationThirdActivity.class);
             intent.putExtra("Email", email);
             intent.putExtra("Password", password);
             startActivity(intent);
@@ -151,9 +152,5 @@ public class RegistrationSecond extends AppCompatActivity {
 
     private boolean arePasswordsCorrect(String password, String confirmedPassword) {
         return password.equals(confirmedPassword);
-    }
-
-    private boolean isEmailValid(String email) {
-        return email.contains("@");
     }
 }

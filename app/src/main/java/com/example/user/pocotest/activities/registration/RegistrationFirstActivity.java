@@ -1,4 +1,4 @@
-package com.example.user.pocotest.registration;
+package com.example.user.pocotest.activities.registration;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -9,9 +9,9 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.user.pocotest.R;
-import com.example.user.pocotest.WelcomeActivity;
+import com.example.user.pocotest.activities.WelcomeActivity;
 
-public class RegistrationFirst extends AppCompatActivity {
+public class RegistrationFirstActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +53,6 @@ public class RegistrationFirst extends AppCompatActivity {
     }
 
     private void switchNextStep() {
-        startActivity(new Intent(this, RegistrationSecond.class));
+        startActivity(new Intent(this, RegistrationSecondActivity.class));
     }
 }

@@ -1,4 +1,4 @@
-package com.example.user.pocotest.registration;
+package com.example.user.pocotest.activities.registration;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -20,22 +20,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.example.user.pocotest.CongratulationActivity;
+import com.example.user.pocotest.Json;
 import com.example.user.pocotest.R;
+import com.example.user.pocotest.User;
+import com.example.user.pocotest.activities.CongratulationActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
-public class RegistrationThird extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class RegistrationThirdActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private EditText mCityView, mPostalCodeView;
     private String country, email, password, city, postalCode;
     private View mProgressView;
@@ -119,7 +114,7 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
+    public void showProgress(final boolean show) {
         hideSoftKeyboard();
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
         mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
@@ -159,84 +154,24 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
                     showProgress(true);
                 }
             });
+            String url = "https://poco-test.herokuapp.com/addUser";
             Log.d(LOG, "Post called");
-            JSONObject actualData = createJsonObject();
-            Request request = createRequest(actualData);
-            return getResponse(request);
+            Json json = new Json();
+            User user = new User(email, password, country, city, postalCode);
+            try {
+                JSONObject actualData = json.createJsonObject("RegistrationActivity", user);
+                Request request = new Json().createRequest(actualData, url);
+                String result = new Json().getResponse(request);
+                parseResponse(new JSONObject(result));
+                return result;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
 
     }
 
-    private JSONObject createJsonObject() {
-        JSONObject actualData = new JSONObject();
-        String formattedCountry = formatCountry(country);
-        try {
-            actualData.put("email", email);
-            actualData.put("password", password);
-            actualData.put("country", formattedCountry);
-            actualData.put("city", city);
-            actualData.put("postal_code", postalCode);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return actualData;
-    }
-
-    private Request createRequest(JSONObject actualData) {
-        String url = "https://poco-test.herokuapp.com/addUser";
-        MediaType JSON = MediaType.parse("application/json;charset=utf-8");
-        RequestBody postData = RequestBody.create(JSON, actualData.toString());
-        Log.d(LOG, "RequestBody created");
-        return new Request.Builder()
-                .url(url)
-                .post(postData)
-                .build();
-    }
-
-    private String getResponse(Request request) {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
-                .build();
-        try {
-            Response response = client.newCall(request).execute();
-            Log.d(LOG, "Request done, got the response");
-            String result = response.body().string();
-            JSONObject jsonObject = new JSONObject(result);
-            parseResponse(jsonObject);
-            return result;
-        } catch (IOException e) {
-            Log.d(LOG, "Response IOException");
-            e.printStackTrace();
-        } catch (JSONException e) {
-            Log.d(LOG, "Response JSONException");
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private String formatCountry(String country) {
-        switch (country) {
-            case "Estonia":
-                country = "ET";
-                break;
-            case "Latvia":
-                country = "LV";
-                break;
-            case "Lithuania":
-                country = "LT";
-                break;
-            case "Finland":
-                country = "FI";
-                break;
-            case "Russia":
-                country = "RU";
-                break;
-        }
-        return country;
-    }
 
     private void parseResponse(JSONObject jsonObject) {
         try {
@@ -244,7 +179,7 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
                 handleErrorResponse(jsonObject.get("error").toString());
             } else if (jsonObject.has("data")) {
                 if (jsonObject.get("data").toString().equals("success")) {
-                    Intent intent = new Intent(RegistrationThird.this, CongratulationActivity.class);
+                    Intent intent = new Intent(RegistrationThirdActivity.this, CongratulationActivity.class);
                     intent.putExtra("message", "Congratulations on the successful registration!");
                     Log.d(LOG, "success");
                     startActivity(intent);
@@ -260,18 +195,18 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
         Intent intent;
         switch (error) {
             case "err.password.too.short":
-                intent = new Intent(RegistrationThird.this, RegistrationSecond.class);
+                intent = new Intent(RegistrationThirdActivity.this, RegistrationSecondActivity.class);
                 intent.putExtra("error", "password is too short!");
                 intent.putExtra("email", email);
                 startActivity(intent);
                 break;
             case "err.wrong.credentials":
-                intent = new Intent(RegistrationThird.this, RegistrationSecond.class);
+                intent = new Intent(RegistrationThirdActivity.this, RegistrationSecondActivity.class);
                 intent.putExtra("error", "wrong credentials!");
                 startActivity(intent);
                 break;
             case "err.user.exists":
-                intent = new Intent(RegistrationThird.this, RegistrationSecond.class);
+                intent = new Intent(RegistrationThirdActivity.this, RegistrationSecondActivity.class);
                 intent.putExtra("error", "user already exists!");
                 startActivity(intent);
                 break;
@@ -280,7 +215,7 @@ public class RegistrationThird extends AppCompatActivity implements AdapterView.
                     CALLS_TO_SERVER++;
                     new FinishRegistration().execute();
                 } else {
-                    intent = new Intent(RegistrationThird.this, RegistrationSecond.class);
+                    intent = new Intent(RegistrationThirdActivity.this, RegistrationSecondActivity.class);
                     intent.putExtra("error", "connection problem!");
                     startActivity(intent);
                 }
