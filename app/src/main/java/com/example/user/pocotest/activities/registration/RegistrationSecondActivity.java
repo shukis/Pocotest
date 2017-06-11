@@ -61,13 +61,13 @@ public class RegistrationSecondActivity extends AppCompatActivity {
             String error = intent.getStringExtra("error");
             Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
             if (intent.hasExtra("user")) {
-                user = (User)getIntent().getSerializableExtra("user");
+                user = (User) getIntent().getSerializableExtra("user");
                 String email = user.getEmail();
                 View focusView;
                 mEmailView.setText(email);
                 focusView = mPasswordView;
                 focusView.requestFocus();
-                hasPasswordTooShortError=true;
+                hasPasswordTooShortError = true;
             }
         }
     }
@@ -147,7 +147,7 @@ public class RegistrationSecondActivity extends AppCompatActivity {
         if (cancel) {
             focusView.requestFocus();
         } else {
-            if(!hasPasswordTooShortError){
+            if (!hasPasswordTooShortError) {
                 user = new User(email, password, null, null, null);
             }
             user.setEmail(email);

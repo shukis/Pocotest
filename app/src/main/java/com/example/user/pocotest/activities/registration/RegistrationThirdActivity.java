@@ -42,7 +42,7 @@ public class RegistrationThirdActivity extends AppCompatActivity implements Adap
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        user = (User)getIntent().getSerializableExtra("User");
+        user = (User) getIntent().getSerializableExtra("User");
         email = user.getEmail();
         password = user.getPassword();
         super.onCreate(savedInstanceState);
@@ -62,7 +62,7 @@ public class RegistrationThirdActivity extends AppCompatActivity implements Adap
         mPostalCodeView = (EditText) findViewById(R.id.signUpPostalCode);
         mProgressView = findViewById(R.id.login_progress);
         mLoginFormView = findViewById(R.id.login_form);
-        if(user.getCountry()!=null){
+        if (user.getCountry() != null) {
             mCityView.setText(user.getCity());
             mPostalCodeView.setText(user.getPostalCode());
         }
@@ -238,7 +238,7 @@ public class RegistrationThirdActivity extends AppCompatActivity implements Adap
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        if(user.getCountry()!=null) {
+        if (user.getCountry() != null) {
             int selectionPosition = adapter.getPosition(user.getCountry());
             spinner.setSelection(selectionPosition);
         }
