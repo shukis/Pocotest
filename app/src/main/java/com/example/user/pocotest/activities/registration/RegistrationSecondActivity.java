@@ -14,13 +14,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.user.pocotest.R;
+import com.example.user.pocotest.User;
 import com.example.user.pocotest.activities.LoginActivity;
 
 public class RegistrationSecondActivity extends AppCompatActivity {
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView, mConfirmPasswordView;
     private CheckBox terms;
-
+    private User user;
+    private boolean hasPasswordTooShortError = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,12 +60,14 @@ public class RegistrationSecondActivity extends AppCompatActivity {
         if (intent.hasExtra("error")) {
             String error = intent.getStringExtra("error");
             Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
-            if (intent.hasExtra("email")) {
-                String email = intent.getStringExtra("email");
+            if (intent.hasExtra("user")) {
+                user = (User)getIntent().getSerializableExtra("user");
+                String email = user.getEmail();
                 View focusView;
                 mEmailView.setText(email);
                 focusView = mPasswordView;
                 focusView.requestFocus();
+                hasPasswordTooShortError=true;
             }
         }
     }
@@ -143,9 +147,13 @@ public class RegistrationSecondActivity extends AppCompatActivity {
         if (cancel) {
             focusView.requestFocus();
         } else {
+            if(!hasPasswordTooShortError){
+                user = new User(email, password, null, null, null);
+            }
+            user.setEmail(email);
+            user.setPassword(password);
             Intent intent = new Intent(this, RegistrationThirdActivity.class);
-            intent.putExtra("Email", email);
-            intent.putExtra("Password", password);
+            intent.putExtra("User", user);
             startActivity(intent);
         }
     }

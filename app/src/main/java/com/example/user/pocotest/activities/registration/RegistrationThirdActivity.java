@@ -37,13 +37,14 @@ public class RegistrationThirdActivity extends AppCompatActivity implements Adap
     private View mLoginFormView;
     private int CALLS_TO_SERVER = 0;
     private final String LOG = "OKHTTP3";
+    private User user;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Intent intent = getIntent();
-        email = intent.getStringExtra("Email");
-        password = intent.getStringExtra("Password");
+        user = (User)getIntent().getSerializableExtra("User");
+        email = user.getEmail();
+        password = user.getPassword();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration_third);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -61,6 +62,10 @@ public class RegistrationThirdActivity extends AppCompatActivity implements Adap
         mPostalCodeView = (EditText) findViewById(R.id.signUpPostalCode);
         mProgressView = findViewById(R.id.login_progress);
         mLoginFormView = findViewById(R.id.login_form);
+        if(user.getCountry()!=null){
+            mCityView.setText(user.getCity());
+            mPostalCodeView.setText(user.getPostalCode());
+        }
         Button continueButton = (Button) findViewById(R.id.signUpThirdContinue);
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,7 +162,9 @@ public class RegistrationThirdActivity extends AppCompatActivity implements Adap
             String url = "https://poco-test.herokuapp.com/addUser";
             Log.d(LOG, "Post called");
             Json json = new Json();
-            User user = new User(email, password, country, city, postalCode);
+            user.setCountry(country);
+            user.setCity(city);
+            user.setPostalCode(postalCode);
             try {
                 JSONObject actualData = json.createJsonObject("RegistrationActivity", user);
                 Request request = new Json().createRequest(actualData, url);
@@ -197,7 +204,7 @@ public class RegistrationThirdActivity extends AppCompatActivity implements Adap
             case "err.password.too.short":
                 intent = new Intent(RegistrationThirdActivity.this, RegistrationSecondActivity.class);
                 intent.putExtra("error", "password is too short!");
-                intent.putExtra("email", email);
+                intent.putExtra("user", user);
                 startActivity(intent);
                 break;
             case "err.wrong.credentials":
@@ -231,6 +238,10 @@ public class RegistrationThirdActivity extends AppCompatActivity implements Adap
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        if(user.getCountry()!=null) {
+            int selectionPosition = adapter.getPosition(user.getCountry());
+            spinner.setSelection(selectionPosition);
+        }
         spinner.setOnItemSelectedListener(this);
     }
 

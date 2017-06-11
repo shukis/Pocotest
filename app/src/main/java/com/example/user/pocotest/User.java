@@ -1,7 +1,11 @@
 package com.example.user.pocotest;
 
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
+
+
     public User(String email, String password, String city, String country, String postalCode) {
         this.email = email;
         this.password = password;
@@ -14,27 +18,44 @@ public class User {
 
     private String email, password, city, country, postalCode;
 
-    String getEmail() {
+    public String getEmail() {
         return email;
     }
 
-
-    String getPassword() {
+    public String getPassword() {
         return password;
     }
 
-
-    String getCity() {
+    public String getCity() {
         return city;
     }
 
-
-    String getCountry() {
+    public String getCountry() {
         return country;
     }
 
-    String getPostalCode() {
+    public String getPostalCode() {
         return postalCode;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
     }
 
     private String formatCountry(String country) {
