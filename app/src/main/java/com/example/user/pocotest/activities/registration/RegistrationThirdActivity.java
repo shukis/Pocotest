@@ -239,7 +239,8 @@ public class RegistrationThirdActivity extends AppCompatActivity implements Adap
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         if (user.getCountry() != null) {
-            int selectionPosition = adapter.getPosition(user.getCountry());
+            String country = user.formatCountry(user.getCountry());
+            int selectionPosition = adapter.getPosition(country);
             spinner.setSelection(selectionPosition);
         }
         spinner.setOnItemSelectedListener(this);

@@ -51,14 +51,14 @@ public class User implements Serializable {
     }
 
     public void setCountry(String country) {
-        this.country = country;
+        this.country = formatCountry(country);
     }
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
     }
 
-    private String formatCountry(String country) {
+    public String formatCountry(String country) {
         switch (country) {
             case "Estonia":
                 country = "ET";
@@ -74,6 +74,21 @@ public class User implements Serializable {
                 break;
             case "Russia":
                 country = "RU";
+                break;
+            case "ET":
+                country = "Estonia";
+                break;
+            case "LV":
+                country = "Latvia";
+                break;
+            case "LT":
+                country = "Lithuania";
+                break;
+            case "FI":
+                country = "Finland";
+                break;
+            case "RU":
+                country = "Russia";
                 break;
         }
         return country;
