@@ -17,6 +17,10 @@
     <string name="city">City</string>
     <string name="postal_code">Postal code</string>
     <string name="thank_you">Thank you!</string>
+    <string name="thank_you1">Thank you1!</string>
+    <string name="thank_you2">Thank you2!</string>
+    <string name="thank_you3">Thank you3!</string>
+    <string name="thank_you4">Thank you4!</string>
     <string name="description1">I am very glad you want to create an account.</string>
     <string name="description2">First of all you need to insert your email, password and accept the Terms of service.</string>
     <string name="description3">On the second page you need to choose your country, enter your city and postal code.</string>
