@@ -18,8 +18,12 @@ android {
         }
     }
 }
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.2'
+}
 
 dependencies {
+   // classpath 'com.android.tools.build:gradle:2.2.2'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
