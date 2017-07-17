@@ -10,7 +10,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.+'
+        classpath 'com.android.tools.build:gradle:2.2.2'
         classpath 'io.fabric.tools:gradle:1.+'
         classpath 'org.greenrobot:greendao-gradle-plugin:3.2.1'
     }
@@ -39,6 +39,17 @@ android {
         }
     }
 }
+def GROUP_BUILD_TASKS = 'Build'
+task buildGreenhouseDebug(dependsOn: ['clean', 'build'])
+buildGreenhouseDebug.group = GROUP_BUILD_TASKS
+buildGreenhouseDebug.description = "Build and publish the debug version with GreenhouseCI"
+
+task buildGreenhouseRelease(dependsOn: ['buildGreenhouseDebug'])
+buildGreenhouseRelease.group = GROUP_BUILD_TASKS
+buildGreenhouseRelease.description = "Build and publish the release version with GreenhouseCI"
+
+build.mustRunAfter clean
+
 
 dependencies {
 

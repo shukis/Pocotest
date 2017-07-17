@@ -4,12 +4,20 @@ buildscript {
     repositories {
         jcenter()
     }
-    dependencies {
+    /*dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
-    }
+    }*/
+}
+ext {
+    versionName = "2.1"
+    versionCode = 97
+    // For tagging Tabasco artefacts as release by Jenkins builds
+    releaseName = System.getProperty("releaseName", "$System.env.releaseName")
+    isRelease = !(project.ext.releaseName == null || project.ext.releaseName.equals("") ||
+            project.ext.releaseName.equals("null"))
 }
 
 allprojects {
