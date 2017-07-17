@@ -1,5 +1,21 @@
 apply plugin: 'com.android.application'
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        flatDir {
+            dirs 'plugins'
+        }
+        maven { url 'https://maven.fabric.io/public' }
+        maven { url "https://jitpack.io" }
+    }
 
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'org.greenrobot:greendao-gradle-plugin:3.2.1'
+    }
+}
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
@@ -23,7 +39,7 @@ task wrapper(type: Wrapper) {
 }
 
 dependencies {
-   // classpath 'com.android.tools.build:gradle:2.2.2'
+
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
